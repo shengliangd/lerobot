@@ -1149,6 +1149,7 @@ class LeRobotDataset(torch.utils.data.Dataset):
         self,
         episode_data: dict | None = None,
         parallel_encoding: bool = True,
+        compute_stats: bool = True,
     ) -> None:
         """
         This will save to disk the current episode in self.episode_buffer.
@@ -1192,7 +1193,10 @@ class LeRobotDataset(torch.utils.data.Dataset):
 
         # Wait for image writer to end, so that episode stats over images can be computed
         self._wait_image_writer()
-        ep_stats = compute_episode_stats(episode_buffer, self.features)
+        if compute_stats:
+            ep_stats = compute_episode_stats(episode_buffer, self.features)
+        else:
+            ep_stats = dict()
 
         ep_metadata = self._save_episode_data(episode_buffer)
         has_video_keys = len(self.meta.video_keys) > 0
